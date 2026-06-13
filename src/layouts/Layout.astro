@@ -5,6 +5,7 @@ import "@fontsource/roboto/700.css";
 
 import ConfigCarrier from "@components/ConfigCarrier.astro";
 import { profileConfig, siteConfig } from "@/config";
+import { clientTranslations } from "@i18n/client";
 import {
 	AUTO_MODE,
 	BANNER_HEIGHT,
@@ -108,6 +109,36 @@ const bannerOffset =
 				  media={favicon.theme && `(prefers-color-scheme: ${favicon.theme})`}
 			/>
 		))}
+
+		<!-- Inject i18n translations and apply saved language early -->
+		<script is:inline define:vars={{i18nTranslations: clientTranslations, defaultLang: siteConfig.lang}}>
+			window.__I18N_DATA__ = { translations: i18nTranslations, current: defaultLang };
+
+			window.__applyI18n = function(lang) {
+				var t = window.__I18N_DATA__.translations[lang];
+				if (!t) return;
+				document.documentElement.lang = lang.replace('_', '-');
+				var els = document.querySelectorAll('[data-i18n]');
+				for (var i = 0; i < els.length; i++) {
+					var key = els[i].dataset.i18n;
+					if (key && t[key] !== undefined) els[i].textContent = t[key];
+				}
+				var pluralEls = document.querySelectorAll('[data-i18n-singular]');
+				for (var j = 0; j < pluralEls.length; j++) {
+					var el = pluralEls[j];
+					var count = Number(el.dataset.i18nCount);
+					var pKey = count === 1 ? el.dataset.i18nSingular : el.dataset.i18nPlural;
+					if (pKey && t[pKey] !== undefined) el.textContent = ' ' + t[pKey];
+				}
+				window.__I18N_DATA__.current = lang;
+			};
+
+			var savedLang = localStorage.getItem('fuwari-lang');
+			if (savedLang && window.__I18N_DATA__.translations[savedLang]) {
+				window.__I18N_DATA__.current = savedLang;
+				document.documentElement.lang = savedLang.replace('_', '-');
+			}
+		</script>
 
 		<!-- Set the theme before the page is rendered to avoid a flash -->
 		<script is:inline define:vars={{DEFAULT_THEME, LIGHT_MODE, DARK_MODE, AUTO_MODE, BANNER_HEIGHT_EXTEND, PAGE_WIDTH, configHue}}>
@@ -431,6 +462,10 @@ const setup = () => {
 		const heightExtend = document.getElementById('page-height-extend')
 		if (heightExtend) {
 			heightExtend.classList.remove('hidden')
+		}
+		// re-apply saved language after page navigation
+		if (window.__applyI18n && window.__I18N_DATA__?.current) {
+			window.__applyI18n(window.__I18N_DATA__.current)
 		}
 	});
 	window.swup.hooks.on('visit:end', (_visit: {to: {url: string}}) => {
