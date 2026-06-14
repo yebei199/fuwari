@@ -9,7 +9,7 @@
     "build": "astro build && pagefind --site dist",
     "preview": "astro preview",
     "astro": "astro",
-    "type-check": "tsc --noEmit --isolatedDeclarations",
+    "type-check": "tsc --noEmit",
     "new-post": "node scripts/new-post.js",
     "format": "biome format --write ./src",
     "lint": "biome check --write ./src"
@@ -57,7 +57,7 @@
     "stylus": "^0.64.0",
     "svelte": "^5.56.3",
     "tailwindcss": "^3.4.19",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
