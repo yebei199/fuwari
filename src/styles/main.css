@@ -9,7 +9,9 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-family-sans: Roboto, sans-serif, ui-sans-serif, system-ui, -apple-system,
+  /* Tailwind v4 font tokens use the `--font-*` namespace; `--font-sans` overrides
+     the default body font (Preflight reads it). v3 used theme.fontFamily.sans. */
+  --font-sans: Roboto, ui-sans-serif, system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
