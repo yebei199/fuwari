@@ -25,12 +25,16 @@ import { remarkExcerpt } from "./src/plugins/remark-excerpt.js";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs";
 import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-copy-button.js";
 
+const astroCommand = process.argv.find((arg) => ["dev", "build", "preview"].includes(arg));
+const lifecycleCommand = process.env.npm_lifecycle_event;
+const isDevCommand = astroCommand === "dev" || lifecycleCommand === "dev" || lifecycleCommand === "start";
+
 // https://astro.build/config
 export default defineConfig({
 	site: "https://fuwari.vercel.app/",
 	base: "/",
 	trailingSlash: "always",
-	adapter: cloudflare(),
+	adapter: cloudflare(isDevCommand ? { prerenderEnvironment: "node" } : {}),
 	integrations: [
 		swup({
 			theme: false,

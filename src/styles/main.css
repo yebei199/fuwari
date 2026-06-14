@@ -149,6 +149,24 @@
     color: rgb(255 255 255 / 0.25);
 }
 
+/* Keep button text colors unlayered for the same reason as the text utilities above. */
+.btn-plain {
+    color: rgb(0 0 0 / 0.75);
+}
+.btn-plain:hover,
+.btn-plain:active,
+.btn-plain.current-theme-btn {
+    color: var(--primary);
+}
+.dark .btn-plain {
+    color: rgb(255 255 255 / 0.75);
+}
+.dark .btn-plain:hover,
+.dark .btn-plain:active,
+.dark .btn-plain.current-theme-btn {
+    color: var(--primary);
+}
+
 .custom-md img, #post-cover img {
     @apply cursor-zoom-in
 }
