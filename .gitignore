@@ -21,6 +21,9 @@ pnpm-debug.log*
 .DS_Store
 
 .vercel
+.wrangler
+.dev.vars*
+!.dev.vars.example
 
 package-lock.json
 bun.lockb

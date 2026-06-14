@@ -1,4 +1,5 @@
 import tailwindcss from "@tailwindcss/vite";
+import cloudflare from "@astrojs/cloudflare";
 import sitemap from "@astrojs/sitemap";
 import svelte from "@astrojs/svelte";
 import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
@@ -29,6 +30,7 @@ export default defineConfig({
 	site: "https://fuwari.vercel.app/",
 	base: "/",
 	trailingSlash: "always",
+	adapter: cloudflare(),
 	integrations: [
 		swup({
 			theme: false,

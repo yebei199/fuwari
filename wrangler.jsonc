@@ -1,0 +1,9 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "blog",
+	"compatibility_date": "2026-06-14",
+	"compatibility_flags": ["global_fetch_strictly_public", "nodejs_compat"],
+	"observability": {
+		"enabled": true
+	}
+}
