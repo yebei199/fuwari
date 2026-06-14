@@ -1,4 +1,20 @@
-@tailwind components;
+@import "tailwindcss";
+@import "./transition.css";
+@import "./photoswipe.css";
+@import "./scrollbar.css";
+@import "./expressive-code.css";
+@import "./markdown.css";
+@plugin "@tailwindcss/typography";
+
+/* Match Tailwind v3 class-based dark mode for remaining Tailwind dark variants. */
+@custom-variant dark (.dark &);
+
+@theme {
+  /* Tailwind v4 font tokens use the `--font-*` namespace; `--font-sans` overrides
+     the default body font (Preflight reads it). v3 used theme.fontFamily.sans. */
+  --font-sans: Roboto, ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
 
 @layer components {
     .card-base {
@@ -15,10 +31,14 @@
         before:absolute before:rounded-[inherit] before:inset-0 before:scale-[0.85] hover:before:scale-100 before:-z-10
     }
     .link {
-        @apply transition rounded-md p-1 -m-1 expand-animation;
+        @apply transition rounded-md p-1 -m-1
+        relative before:ease-out before:transition active:bg-none hover:before:bg-[var(--btn-plain-bg-hover)] active:before:bg-[var(--btn-plain-bg-active)] z-0
+        before:absolute before:rounded-[inherit] before:inset-0 before:scale-[0.85] hover:before:scale-100 before:-z-10;
     }
     .link-lg {
-        @apply transition rounded-md p-1.5 -m-1.5 expand-animation;
+        @apply transition rounded-md p-1.5 -m-1.5
+        relative before:ease-out before:transition active:bg-none hover:before:bg-[var(--btn-plain-bg-hover)] active:before:bg-[var(--btn-plain-bg-active)] z-0
+        before:absolute before:rounded-[inherit] before:inset-0 before:scale-[0.85] hover:before:scale-100 before:-z-10;
     }
     .float-panel {
         @apply top-[5.25rem] rounded-[var(--radius-large)] overflow-hidden bg-[var(--float-panel-bg)] transition shadow-xl dark:shadow-none
@@ -44,7 +64,8 @@
             @apply hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)]
         }
         &.scale-animation {
-            @apply expand-animation;
+            @apply relative before:ease-out before:transition active:bg-none hover:before:bg-[var(--btn-plain-bg-hover)] active:before:bg-[var(--btn-plain-bg-active)] z-0
+            before:absolute before:rounded-[inherit] before:inset-0 before:scale-[0.85] hover:before:scale-100 before:-z-10;
             &.current-theme-btn {
                 @apply before:scale-100 before:opacity-100 before:bg-[var(--btn-plain-bg-hover)] text-[var(--primary)]
             }
@@ -77,22 +98,6 @@
         display: none;
     }
 
-    .text-90 {
-        @apply text-black/90 dark:text-white/90
-    }
-    .text-75 {
-        @apply text-black/75 dark:text-white/75
-    }
-    .text-50 {
-        @apply text-black/50 dark:text-white/50
-    }
-    .text-30 {
-        @apply text-black/30 dark:text-white/30
-    }
-    .text-25 {
-        @apply text-black/25 dark:text-white/25
-    }
-
     .meta-icon {
         @apply w-8 h-8 transition rounded-md flex items-center justify-center bg-[var(--btn-regular-bg)]
         text-[var(--btn-content)] mr-2
@@ -110,6 +115,38 @@
     .btn-regular-dark.success {
         @apply bg-[oklch(0.75_0.14_var(--hue))] dark:bg-[oklch(0.75_0.14_var(--hue))]
     }
+}
+
+/* Keep these unlayered so they outrank Tailwind Preflight's unlayered anchor color reset. */
+.text-90 {
+    color: rgb(0 0 0 / 0.9);
+}
+.dark .text-90 {
+    color: rgb(255 255 255 / 0.9);
+}
+.text-75 {
+    color: rgb(0 0 0 / 0.75);
+}
+.dark .text-75 {
+    color: rgb(255 255 255 / 0.75);
+}
+.text-50 {
+    color: rgb(0 0 0 / 0.5);
+}
+.dark .text-50 {
+    color: rgb(255 255 255 / 0.5);
+}
+.text-30 {
+    color: rgb(0 0 0 / 0.3);
+}
+.dark .text-30 {
+    color: rgb(255 255 255 / 0.3);
+}
+.text-25 {
+    color: rgb(0 0 0 / 0.25);
+}
+.dark .text-25 {
+    color: rgb(255 255 255 / 0.25);
 }
 
 .custom-md img, #post-cover img {
