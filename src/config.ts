@@ -8,7 +8,7 @@ import type {
 import { LinkPreset } from "./types/config";
 
 export const siteConfig: SiteConfig = {
-	title: "Fuwari",
+	title: "cat blog",
 	subtitle: "Demo Site",
 	lang: "en", // Language code, e.g. 'en', 'zh_CN', 'ja', etc.
 	themeColor: {
@@ -55,7 +55,7 @@ export const navBarConfig: NavBarConfig = {
 export const profileConfig: ProfileConfig = {
 	avatar: "https://upload.cryptorust.uk/u/meow-loading-poster-v1.webp",
 	name: "cat",
-	bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+	bio: "A personal blog about technology, open source, and everyday notes.",
 	links: [
 		{
 			name: "Twitter",
