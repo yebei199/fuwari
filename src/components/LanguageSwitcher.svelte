@@ -1,40 +1,40 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import { SUPPORTED_LANGS, type LangCode } from "@i18n/client";
-  import { currentLang } from "@i18n/store";
+import { type LangCode, SUPPORTED_LANGS } from "@i18n/client";
+import { currentLang } from "@i18n/store";
+import { onMount } from "svelte";
 
-  let open = $state(false);
+let open = $state(false);
 
-  onMount(() => {
-    // Apply saved language to Astro-rendered DOM on mount
-    const lang = $currentLang;
-    if ((window as any).__applyI18n) {
-      (window as any).__applyI18n(lang);
-    }
-    if ((window as any).__I18N_DATA__) {
-      (window as any).__I18N_DATA__.current = lang;
-    }
-  });
+onMount(() => {
+	// Apply saved language to Astro-rendered DOM on mount
+	const lang = $currentLang;
+	if ((window as any).__applyI18n) {
+		(window as any).__applyI18n(lang);
+	}
+	if ((window as any).__I18N_DATA__) {
+		(window as any).__I18N_DATA__.current = lang;
+	}
+});
 
-  function switchLang(lang: LangCode) {
-    currentLang.set(lang);
-    open = false;
-    localStorage.setItem("fuwari-lang", lang);
-    if ((window as any).__applyI18n) {
-      (window as any).__applyI18n(lang);
-    }
-  }
+function switchLang(lang: LangCode) {
+	currentLang.set(lang);
+	open = false;
+	localStorage.setItem("fuwari-lang", lang);
+	if ((window as any).__applyI18n) {
+		(window as any).__applyI18n(lang);
+	}
+}
 
-  function toggleOpen() {
-    open = !open;
-  }
+function toggleOpen() {
+	open = !open;
+}
 
-  const labelMap: Record<LangCode, string> = {
-    en: "EN",
-    zh_CN: "中",
-    ja: "日",
-    de: "DE",
-  };
+const labelMap: Record<LangCode, string> = {
+	en: "EN",
+	zh_CN: "中",
+	ja: "日",
+	de: "DE",
+};
 </script>
 
 <div class="relative">

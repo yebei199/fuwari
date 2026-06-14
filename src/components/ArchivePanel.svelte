@@ -1,7 +1,6 @@
 <script lang="ts">
-import { onMount } from "svelte";
-
 import { t as i18nT } from "@i18n/store";
+import { onMount } from "svelte";
 import { getPostUrlBySlug } from "../utils/url-utils";
 
 export let tags: string[];
