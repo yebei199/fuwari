@@ -53,7 +53,7 @@ export const navBarConfig: NavBarConfig = {
 };
 
 export const profileConfig: ProfileConfig = {
-	avatar: "assets/images/demo-avatar.png", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
+	avatar: "https://upload.cryptorust.uk/u/meow-loading-poster-v1.webp",
 	name: "cat",
 	bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
 	links: [
