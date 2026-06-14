@@ -6,10 +6,7 @@
 @import "./markdown.css";
 @plugin "@tailwindcss/typography";
 
-/* Match v3 `darkMode: "class"` exactly: `.dark &` yields `.dark .x` (specificity
-   0,2,0) so dark rules reliably beat the light base regardless of source order.
-   The `:where()` form Tailwind suggests has 0 specificity and is order-fragile
-   across Astro's multi-file CSS bundling. */
+/* Match Tailwind v3 class-based dark mode for remaining Tailwind dark variants. */
 @custom-variant dark (.dark &);
 
 @theme {
@@ -101,22 +98,6 @@
         display: none;
     }
 
-    .text-90 {
-        @apply text-black/90 dark:text-white/90
-    }
-    .text-75 {
-        @apply text-black/75 dark:text-white/75
-    }
-    .text-50 {
-        @apply text-black/50 dark:text-white/50
-    }
-    .text-30 {
-        @apply text-black/30 dark:text-white/30
-    }
-    .text-25 {
-        @apply text-black/25 dark:text-white/25
-    }
-
     .meta-icon {
         @apply w-8 h-8 transition rounded-md flex items-center justify-center bg-[var(--btn-regular-bg)]
         text-[var(--btn-content)] mr-2
@@ -134,6 +115,38 @@
     .btn-regular-dark.success {
         @apply bg-[oklch(0.75_0.14_var(--hue))] dark:bg-[oklch(0.75_0.14_var(--hue))]
     }
+}
+
+/* Keep these unlayered so they outrank Tailwind Preflight's unlayered anchor color reset. */
+.text-90 {
+    color: rgb(0 0 0 / 0.9);
+}
+.dark .text-90 {
+    color: rgb(255 255 255 / 0.9);
+}
+.text-75 {
+    color: rgb(0 0 0 / 0.75);
+}
+.dark .text-75 {
+    color: rgb(255 255 255 / 0.75);
+}
+.text-50 {
+    color: rgb(0 0 0 / 0.5);
+}
+.dark .text-50 {
+    color: rgb(255 255 255 / 0.5);
+}
+.text-30 {
+    color: rgb(0 0 0 / 0.3);
+}
+.dark .text-30 {
+    color: rgb(255 255 255 / 0.3);
+}
+.text-25 {
+    color: rgb(0 0 0 / 0.25);
+}
+.dark .text-25 {
+    color: rgb(255 255 255 / 0.25);
 }
 
 .custom-md img, #post-cover img {
