@@ -65,8 +65,8 @@ test("dark-mode post card text is light in the dev server", async ({ page }) => 
 
 	const title = page.getByRole("link", { name: postTitle }).first();
 	const description = page.getByText(postDescription).first();
-	const homeLink = page.locator("#navbar").getByRole("link", { name: "Home" });
-	const archiveLink = page.locator("#navbar").getByRole("link", { name: "Archive" });
+	const homeLink = page.locator('#navbar a[aria-label="Home"]');
+	const archiveLink = page.locator('#navbar a[aria-label="Archive"]');
 	const profileImage = page.getByAltText("Profile Image of the Author");
 
 	await expect(title).toBeVisible();

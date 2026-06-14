@@ -1,6 +1,21 @@
 import { defineConfig, devices } from "@playwright/test";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 
-const chromiumExecutablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH;
+function findExecutable(names: string[]): string | undefined {
+	for (const directory of process.env.PATH?.split(":") ?? []) {
+		for (const name of names) {
+			const executablePath = join(directory, name);
+			if (existsSync(executablePath)) {
+				return executablePath;
+			}
+		}
+	}
+}
+
+const chromiumExecutablePath =
+	process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH ??
+	findExecutable(["google-chrome", "google-chrome-stable", "chromium", "chromium-browser"]);
 
 export default defineConfig({
 	testDir: "./tests",
