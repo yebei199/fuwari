@@ -1,7 +1,7 @@
 # About
-This is the demo site for [Fuwari](https://github.com/saicaca/fuwari).
+This is cat's site built with [Fuwari](https://github.com/yebei199/fuwari).
 
-::github{repo="saicaca/fuwari"}
+::github{repo="yebei199/fuwari"}
 
 > ### Sources of images used in this site
 > - [Unsplash](https://unsplash.com/)
