@@ -6,7 +6,11 @@
 @import "./markdown.css";
 @plugin "@tailwindcss/typography";
 
-@custom-variant dark (&:where(.dark, .dark *));
+/* Match v3 `darkMode: "class"` exactly: `.dark &` yields `.dark .x` (specificity
+   0,2,0) so dark rules reliably beat the light base regardless of source order.
+   The `:where()` form Tailwind suggests has 0 specificity and is order-fragile
+   across Astro's multi-file CSS bundling. */
+@custom-variant dark (.dark &);
 
 @theme {
   /* Tailwind v4 font tokens use the `--font-*` namespace; `--font-sans` overrides
