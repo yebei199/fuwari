@@ -8,11 +8,11 @@ let open = $state(false);
 onMount(() => {
 	// Apply saved language to Astro-rendered DOM on mount
 	const lang = $currentLang;
-	if ((window as any).__applyI18n) {
-		(window as any).__applyI18n(lang);
+	if (window.__applyI18n) {
+		window.__applyI18n(lang);
 	}
-	if ((window as any).__I18N_DATA__) {
-		(window as any).__I18N_DATA__.current = lang;
+	if (window.__I18N_DATA__) {
+		window.__I18N_DATA__.current = lang;
 	}
 });
 
@@ -20,8 +20,8 @@ function switchLang(lang: LangCode) {
 	currentLang.set(lang);
 	open = false;
 	localStorage.setItem("fuwari-lang", lang);
-	if ((window as any).__applyI18n) {
-		(window as any).__applyI18n(lang);
+	if (window.__applyI18n) {
+		window.__applyI18n(lang);
 	}
 }
 

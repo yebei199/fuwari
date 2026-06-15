@@ -4,6 +4,11 @@ declare global {
 	interface Window {
 		// type from '@swup/astro' is incorrect
 		swup: AstroIntegration;
+		__I18N_DATA__?: {
+			translations: Record<string, Record<string, string>>;
+			current: string;
+		};
+		__applyI18n?: (lang: string) => void;
 		pagefind: {
 			search: (query: string) => Promise<{
 				results: Array<{
