@@ -119,25 +119,61 @@ grammar:
 
 叠加第二层原因:`nixos-rebuild switch` 以 root 跑,而 fcitx5 活在你的用户 Wayland 会话里,root 没法干净地戳它。
 
-### 让 nix 自己触发部署
+### 让 nix 自己触发部署——第一版,越修越糟
 
-手动去托盘点「重新部署」太烦。既然 fcitx5 是 systemd 用户服务,就用 `home.activation` 钩子在切换时自动收尾:
+手动去托盘点「重新部署」太烦。既然 fcitx5 是 systemd 用户服务,第一反应就是用 `home.activation` 钩子在切换时「清缓存 + 重启」:
+
+```nix
+# ⚠️ 这是反面教材,别抄
+$DRY_RUN_CMD rm -rf "$HOME/${rimeDir}/build"          # 删掉编译缓存,逼 Rime 重来
+systemctl --user restart app-org.fcitx.Fcitx5@autostart.service
+```
+
+装上、rebuild,当场好了。然后每次 rebuild——**哪怕跟输入法八竿子打不着的改动——rime 都退回「未部署」状态,又得手动 deploy。** 比不加钩子还烦。
+
+### 为什么 `rm -rf build` 是个坑
+
+拿 `rime_deployer` 实测一次冷部署(空 `build/`),真相就出来了:
+
+```
+Elapsed (wall clock): 0:10.56       # 冷全量重编要 10 秒
+Maximum resident set: ~900 MB
+```
+
+而且**部署日志里没有一行提到语法模型**——`.gram` 是运行时才 mmap 的,编译阶段根本不碰。
+
+把因果串起来:`rm -rf build` 把 77MB 已编译表全删了,fcitx5 一重启就得在后台跑这 10 秒冷重编;这期间输入法处于半残状态,而那次重编还常被别的 Lua 报错打断,停在半成品——直到你手动「重新部署」才补全。**换句话说:rebuild 前 `build/` 只是「过期但完整可用」,我这一删,把它变成了「每次归零、且重建不可靠」。删缓存不是刚需,是自伤。**
+
+### 第二版:确定性重编,别赌自愈
+
+正确姿势是:**别删 `build/` 赌 fcitx5 自己重编,而是在重启前用 `rime_deployer --build` 把 `build/` 确定性地编好**,再重载 fcitx5;并用一个 marker 记录输入的 store 路径,只在 rime 配置真变了时才跑,避免每次无关 rebuild 都吃这几秒。
 
 ```nix
 home.activation.rimeRedeploy = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
   export XDG_RUNTIME_DIR="''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
-  $DRY_RUN_CMD rm -rf "$HOME/${rimeDir}/build"          # 清缓存,强制重编
-  fcitx5Unit="app-org.fcitx.Fcitx5@autostart.service"
-  if ${pkgs.systemd}/bin/systemctl --user is-active --quiet "$fcitx5Unit" 2>/dev/null; then
-    $DRY_RUN_CMD ${pkgs.systemd}/bin/systemctl --user restart "$fcitx5Unit" || true
+  rd="$HOME/${rimeDir}"
+  marker="$rd/build/.hm-rime-inputs"
+  # 输入变了才重部署:oh-my-rime / 语法模型 / 本地 schema 与 default 的 store 路径
+  want="${ohMyRime} ${grammarModel} ${./rime/double_pinyin_flypy.schema.yaml} ..."
+  if [ "$(cat "$marker" 2>/dev/null)" != "$want" ]; then
+    if $DRY_RUN_CMD ${pkgs.librime}/bin/rime_deployer --build "$rd" "$rd" "$rd/build"; then
+      echo "$want" > "$marker"
+      fcitx5Unit="app-org.fcitx.Fcitx5@autostart.service"
+      if ${pkgs.systemd}/bin/systemctl --user is-active --quiet "$fcitx5Unit" 2>/dev/null; then
+        $DRY_RUN_CMD ${pkgs.systemd}/bin/systemctl --user restart "$fcitx5Unit" || true
+      fi
+    fi
   fi
 '';
 ```
 
-两个要点:
+三个要点:
 
-- **删 `build/` 是刚需,不是保险**。因为 1970 时间戳,不能指望 Rime 自己发现要重编;必须物理删掉缓存逼它重来。
-- **重启用 `is-active` 守卫**。TTY / headless / 非本会话切换时,`systemctl --user` 连不到用户总线,守卫让它安静跳过,不报错、不阻断 rebuild。降级到「跟以前一样手动部署」,而不是崩。
+- **确定性构建,不赌自愈**。`rime_deployer --build` 在重启前就把完整 `build/` 编好,fcitx5 起来直接用,没有「半残窗口」。
+- **marker 门控**。用输入文件的 store 路径当指纹,内容一变路径就变;无关 rebuild 指纹不变,直接跳过,不吃那几秒。
+- **重启用 `is-active` 守卫**。TTY / headless 切换时 `systemctl --user` 连不到用户总线,守卫让它安静跳过,不报错、不阻断 rebuild。
+
+> 关键认知:`nixos-rebuild switch` 里的 home-manager 激活是**以用户身份**跑的(通过 `home-manager-<user>.service`),所以 `systemctl --user` 和写用户目录都成立——这也是为什么重启这步真能生效。
 
 ## 花絮:候选字右边括号里的字母是啥
 
@@ -150,5 +186,6 @@ home.activation.rimeRedeploy = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
 - **反直觉的排序,先证伪最贵的假设。** 花五分钟 grep 词频,就否掉了「换整套词库」这个几百兆的弯路。
 - **「自适应」功能出锅时,先查它的历史状态被没被污染**,而不是先怀疑静态数据。
 - **上游用「构建期下载」分发大文件时,基于源码树的消费方式会静默漏掉它**——读它的 CI,别只读它的仓库。
-- **NixOS 上但凡有「编译缓存 + 时间戳判新」的程序(Rime 是一个),1970 mtime 会让它永不自动刷新**;要么物理删缓存,要么找它的显式重载入口,并用 `home.activation` 自动化。
+- **NixOS 上但凡有「编译缓存 + 时间戳判新」的程序(Rime 是一个),1970 mtime 会让它永不自动刷新**。但别急着 `rm -rf` 缓存——那会把「过期但可用」变成「归零且重建不可靠」。正解是调它的**确定性构建入口**(Rime 是 `rime_deployer --build`)在切换时一次编好,再用 marker 门控只在输入变化时跑。
+- **第一个「当场好了」的自动化,未必是对的**。`rm -rf build` 装上当场生效,却在每次无关 rebuild 时暗地里自伤;是 `rime_deployer` 的 10 秒实测数字戳穿了它。自动化也要证伪,不能只看「这次好了」。
 - 系统层集成前先读 nixpkgs 源码:我以为要重编 librime,结果 octagram 早就内置了。**预判的风险,一半是没读源码吓自己。**
