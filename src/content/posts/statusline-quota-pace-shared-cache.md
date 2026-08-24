@@ -4,6 +4,7 @@ published: 2026-08-20
 description: "把额度百分比改成 pace 落差,用共享缓存统一多实例显示,以及过程中撞到的一个被测试放过去的空字符串 bug。"
 tags:
   - "Claude Code"
+  - "状态栏"
   - "shell"
   - "测试"
   - "NixOS"

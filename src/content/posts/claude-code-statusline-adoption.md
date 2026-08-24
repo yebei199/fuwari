@@ -4,6 +4,7 @@ published: 2026-07-27
 description: "statusLine 是官方一等扩展点而非擦边球,但选错 widget 会让状态栏拿你的 OAuth 凭据去调内部接口。"
 tags:
   - "Claude Code"
+  - "状态栏"
   - "NixOS"
   - "终端"
   - "工具选型"
