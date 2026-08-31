@@ -23,7 +23,6 @@ pnpm-debug.log*
 # macOS-specific files
 .DS_Store
 
-.vercel
 .wrangler
 .dev.vars*
 !.dev.vars.example

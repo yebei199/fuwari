@@ -33,10 +33,7 @@ const isDevCommand =
 	astroCommand === "dev" ||
 	lifecycleCommand === "dev" ||
 	lifecycleCommand === "start";
-const isVercelBuild = process.env.VERCEL === "1";
-const adapter = isVercelBuild
-	? undefined
-	: cloudflare(isDevCommand ? { prerenderEnvironment: "node" } : {});
+const adapter = cloudflare(isDevCommand ? { prerenderEnvironment: "node" } : {});
 
 // https://astro.build/config
 export default defineConfig({
