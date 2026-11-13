@@ -6,7 +6,7 @@
     "dev": "astro dev",
     "start": "astro dev",
     "check": "astro check",
-    "build": "astro build && pagefind --site dist",
+    "build": "astro build && pagefind --site dist/client",
     "test:e2e": "playwright test",
     "preview": "astro preview",
     "deploy": "bun run build && wrangler deploy",
