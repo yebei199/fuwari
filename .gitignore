@@ -34,3 +34,6 @@ yarn.lock
 # ide
 .idea
 *.iml
+
+# private posts live in their own private git repo cloned here; never built or deployed from this repo
+src/content/posts/private/
